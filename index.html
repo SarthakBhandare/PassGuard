@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Check your password strength in real-time with breach detection powered by Have I Been Pwned. Get instant feedback on how secure your password is." />
+  <title>PassGuard — Password Strength Checker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background ambient blobs -->
+  <div class="bg-blob blob-1" aria-hidden="true"></div>
+  <div class="bg-blob blob-2" aria-hidden="true"></div>
+  <div class="bg-blob blob-3" aria-hidden="true"></div>
+
+  <main class="container">
+
+    <!-- Header -->
+    <header class="header" role="banner">
+      <div class="logo" aria-label="PassGuard logo">
+        <svg class="logo-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <rect x="8" y="18" width="24" height="16" rx="3" fill="url(#shield-grad)" />
+          <path d="M14 18V13a6 6 0 0 1 12 0v5" stroke="url(#shield-grad)" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="20" cy="26" r="2.5" fill="white"/>
+          <line x1="20" y1="28.5" x2="20" y2="31" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="shield-grad" x1="8" y1="8" x2="32" y2="34" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="var(--accent-primary)"/>
+              <stop offset="100%" stop-color="var(--accent-secondary)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="logo-text">PassGuard</span>
+      </div>
+      <p class="tagline">Real-time password security analysis</p>
+    </header>
+
+    <!-- Main Card -->
+    <section class="card" aria-label="Password strength checker">
+
+      <!-- Input Area -->
+      <div class="input-group">
+        <label for="password-input" class="input-label">Enter your password</label>
+        <div class="input-wrapper" id="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+          </svg>
+          <input
+            type="password"
+            id="password-input"
+            class="password-input"
+            placeholder="Type your password here..."
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="strength-label crack-time-display breach-status"
+          />
+          <button
+            id="toggle-visibility"
+            class="toggle-btn"
+            aria-label="Toggle password visibility"
+            title="Show/hide password"
+            type="button"
+          >
+            <svg id="eye-icon" class="eye-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+            </svg>
+            <svg id="eye-off-icon" class="eye-icon hidden" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Strength Meter -->
+      <div class="strength-section" aria-live="polite">
+        <div class="strength-header">
+          <span class="strength-label-text">Strength</span>
+          <span id="strength-label" class="strength-badge badge-empty" role="status">—</span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Password strength">
+          <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <div class="segment-labels" aria-hidden="true">
+          <span>Weak</span><span>Fair</span><span>Good</span><span>Strong</span>
+        </div>
+      </div>
+
+      <!-- Crack Time -->
+      <div class="crack-time-card" id="crack-time-card">
+        <div class="crack-icon" aria-hidden="true">⏱️</div>
+        <div>
+          <div class="crack-label">Estimated crack time</div>
+          <div id="crack-time-display" class="crack-value">—</div>
+        </div>
+      </div>
+
+      <!-- Criteria Checklist -->
+      <div class="criteria-grid" role="list" aria-label="Password criteria">
+        <div class="criterion" id="crit-length" role="listitem">
+          <span class="crit-icon" aria-hidden="true"></span>
+          <span class="crit-text">At least 8 characters</span>
+        </div>
+        <div class="criterion" id="crit-upper" role="listitem">
+          <span class="crit-icon" aria-hidden="true"></span>
+          <span class="crit-text">Uppercase letter (A–Z)</span>
+        </div>
+        <div class="criterion" id="crit-lower" role="listitem">
+          <span class="crit-icon" aria-hidden="true"></span>
+          <span class="crit-text">Lowercase letter (a–z)</span>
+        </div>
+        <div class="criterion" id="crit-number" role="listitem">
+          <span class="crit-icon" aria-hidden="true"></span>
+          <span class="crit-text">Number (0–9)</span>
+        </div>
+        <div class="criterion" id="crit-special" role="listitem">
+          <span class="crit-icon" aria-hidden="true"></span>
+          <span class="crit-text">Special character (!@#…)</span>
+        </div>
+        <div class="criterion" id="crit-bonus" role="listitem">
+          <span class="crit-icon" aria-hidden="true"></span>
+          <span class="crit-text">Bonus: 12+ characters</span>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="divider" aria-hidden="true"><span>Security Checks</span></div>
+
+      <!-- Breach + Common Check -->
+      <div class="security-checks">
+
+        <div class="check-card" id="common-check-card">
+          <div class="check-header">
+            <div class="check-title">
+              <svg viewBox="0 0 24 24" fill="none" class="check-icon-svg" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
+              Common Password Check
+            </div>
+            <span id="common-status" class="status-pill pill-idle">Not checked</span>
+          </div>
+          <p id="common-message" class="check-message">Type a password to check against common passwords.</p>
+        </div>
+
+        <div class="check-card" id="breach-check-card">
+          <div class="check-header">
+            <div class="check-title">
+              <svg viewBox="0 0 24 24" fill="none" class="check-icon-svg" aria-hidden="true">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" stroke-width="1.8"/>
+                <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+              Data Breach Check
+            </div>
+            <span id="breach-status" class="status-pill pill-idle" role="status">Not checked</span>
+          </div>
+          <p id="breach-message" class="check-message">Uses Have I Been Pwned API (only first 5 SHA-1 hash chars sent).</p>
+          <button id="breach-check-btn" class="breach-btn" type="button" aria-label="Check password against data breach database">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.8"/>
+              <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Check for Breaches
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Score display -->
+      <div class="score-footer">
+        <div class="score-item">
+          <span class="score-num" id="score-display">0</span>
+          <span class="score-desc">/ 7 pts</span>
+        </div>
+        <div class="score-divider" aria-hidden="true"></div>
+        <div class="score-item">
+          <span class="score-num" id="entropy-display">0</span>
+          <span class="score-desc">bits entropy</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+      <p>Your password never leaves your browser. Breach checks use k-Anonymity — only a 5-char hash prefix is sent.</p>
+    </footer>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
