@@ -2,8 +2,6 @@
 
 PassGuard is a sleek, modern, and highly responsive web application designed to evaluate the strength and security of passwords in real-time. It provides instant visual feedback, entropy calculation, and checks against known data breaches to ensure maximum password security.
 
-![PassGuard Preview](passguard_preview_1784871099875.jpg) *(Replace with actual image path if deploying)*
-
 ## 🚀 Features
 
 *   **Real-Time Scoring:** Dynamically calculates a password score based on length, character variety (uppercase, lowercase, numbers, symbols), and bonuses for length.
@@ -26,7 +24,7 @@ Since PassGuard is built with purely static files (HTML, CSS, JS), getting it ru
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/yourusername/PassGuard.git
+    git clone https://github.com/SarthakBhandare/PassGuard.git
     cd PassGuard
     ```
 2.  **Open in your browser:**
@@ -40,4 +38,4 @@ PassGuard prioritizes user privacy. Passwords are **never** stored, logged, or s
 
 ## 📄 License
 
-This project is open-source and available under the [MIT License](LICENSE).
+This project is open-source.
